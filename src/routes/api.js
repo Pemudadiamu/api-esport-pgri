@@ -13,6 +13,8 @@ userRouter.delete('/api/users/logout' , [authMiddleware] , userController.logout
 userRouter.get('/api/users/current' , [authMiddleware] , userController.getUser)
 userRouter.patch('/api/users/updateprofile' , [authMiddleware] , userController.updateProfile);
 userRouter.post('/api/users/verify', authMiddleware, userController.verifyOTP)
+userRouter.post('/api/users/request/otp', authMiddleware , userController.requestotp)
+userRouter.patch('/api/users/update/password' , authMiddleware , userController.changePassword)
 
 // Admin Router
 adminRouter.post('/api/kegiatan/create', [authMiddleware, roleMiddleware(['admin'])], adminController.createKegiatan)

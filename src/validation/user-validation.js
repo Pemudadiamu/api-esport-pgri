@@ -16,14 +16,15 @@ export const loginValidation = Joi.object({
 });
 
 export const updateUserValidation = Joi.object({
-    username : Joi.string().max(100).optional(),
+    email : Joi.string().max(100).optional().email(),
     nama : Joi.string().max(100).optional(),
     game_id : Joi.string().max(100).optional(),
     server_id : Joi.string().max(4).optional()
 })
 
 export const changePassword = Joi.object({
-    password : Joi.string().max(100).required()
+    password : Joi.string().max(100).required(),
+    password_new : Joi.string().max(100).required()
 })
 
 export const otpVerificationValidation = Joi.object({

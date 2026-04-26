@@ -98,7 +98,7 @@ const updateProfile = async(id_user,request)=>{
     request = validate(updateUserValidation, request);
     const data = {};
 
-    const field = ['nama' , 'username' , 'game_id' , 'server_id']
+    const field = ['nama' , 'email' , 'game_id' , 'server_id']
 
     for (const f of field) {
         if(request[f] !== "undefined"){
@@ -152,14 +152,48 @@ console.log(otpRequest.otp , user.otp)
   return "Akun Berhasil Di Verifikasi";
 };
 
+const requestOTP= async(email)=>{
+    const otp = generateOTP();
+    const otpHash = await bcrypt.hash(otp , 10);
+
+    await prismaClient.user.update({
+        where : {
+            email : email
+        },
+        data : {
+            otp : otpHash
+        }
+    })
+
+    await sendOTP(email , otp);
+}
 
 
 // lanjut nanti aja buat change password
-// const changePassword = async(request)=>{
-//     const changePassword = validate(changePassword, request);
-
-
-// }
+const changePW = async(request , id_user)=>{
+    request = validate(changePassword, request);
+    const user = await prismaClient.user.findUnique({
+        where : {
+            id : id_user
+        },
+        select : {
+            password : true
+        }
+    });
+    
+    const passwordCheck = await bcrypt.compare(request.password, user.password);
+    if (!passwordCheck) throw new responseError(401, "Akun kredensial salah!");
+    request.password_new = await bcrypt.hash(request.password_new, 10);
+    
+    await prismaClient.user.update({
+        where : {
+            id : id_user
+        },
+        data : {
+            password : request.password_new
+        }
+    })
+}
 
 // const refreshingToken = (tokenRefresh)=>{
 //     if(!tokenRefresh) throw new responseError(401 , 'Token Missing!')
@@ -180,5 +214,7 @@ export default {
     register,
     login,
     updateProfile,
-    verifyOTP
+    verifyOTP,
+    requestOTP,
+    changePW
 }

@@ -86,11 +86,35 @@ const verifyOTP = async(req,res,next)=>{
     }
 }
 
+const requestotp = async(req,res,next)=>{
+    try {
+        const result = await userService.requestOTP(req.user.email);
+        res.status(200).json({
+            data : "OK"
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const changePassword = async(req,res,next)=>{
+    try {
+        const result = await userService.changePW(req.body, req.user.id);
+        res.status(200).json({
+            data : 'OK'
+        });
+    } catch (e) {
+        next(e);        
+    }
+}
+
 export default{
     register,
     login,
     logout,
     updateProfile,
     getUser,
-    verifyOTP
+    verifyOTP,
+    requestotp,
+    changePassword
 }
