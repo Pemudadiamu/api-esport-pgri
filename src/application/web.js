@@ -4,7 +4,14 @@ import cookieParser from "cookie-parser";
 import { publicRouter } from "../routes/public-api.js";
 import { errorMiddleware } from "../middleware/error-middleware.js";
 import cors from "cors";
+import path from 'path'
 import { adminRouter, siswaRouter, userRouter } from "../routes/api.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 export const web = express();
@@ -16,14 +23,16 @@ web.use((err, req, res, next) => {
 });
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // URL frontend exact
-  credentials: true, // Wajib true
+  origin: 'http://localhost:5173', 
+  credentials: true,
   methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['Set-Cookie'], // Penting!
+  exposedHeaders: ['Set-Cookie'],
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
+
+web.use('/assets', express.static(path.join(__dirname, '../../assets/upload')));
 
 
 web.use(cors(corsOptions));

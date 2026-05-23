@@ -44,7 +44,7 @@ model User{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   absensi Absensi[]
-  team Team?
+  member TeamMember?
 
   @@map("users")
 }
@@ -54,6 +54,7 @@ model Kegiatan{
   nama_kegiatan String @db.VarChar(100)
   tanggal_kegiatan DateTime
   jam String @db.VarChar(50)
+  onlyTeam Boolean? @default(false)
   absensi Absensi[]
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
@@ -75,15 +76,22 @@ model Absensi{
   @@map("absensi")
 }
 
-model Team{
-  id Int @id @default(autoincrement())
-  nama_tim String @db.VarChar(50)
-  user_id String @unique
-  role roleML
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  @@map("teams")
+model Team{
+    id Int @id @default(autoincrement())
+    nama_tim String @db.VarChar(50)
+    member TeamMember[]
+
+    @@map("teams")
 }
 
+model TeamMember{
+    id Int @id @default(autoincrement())
+    teamId Int 
+    userId String @db.VarChar(36) @unique
+    role roleML
+    joinedAt DateTime @default(now())
+
+    team Team @relation(fields: [teamId] , references: [id])
+    user User @relation(fields: [userId] , references: [id])
+}

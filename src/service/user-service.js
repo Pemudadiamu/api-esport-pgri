@@ -27,6 +27,8 @@ const register = async(request)=>{
     // password
     user.password = await bcrypt.hash(user.password, 10);
     
+    await sendOTP(user.email, otp);
+    
     const registerUser = await prismaClient.user.create({
         data : user,
         select: {
@@ -38,9 +40,6 @@ const register = async(request)=>{
             server_id : true
         }
     });
-
-    await sendOTP(user.email, otp);
-
     return registerUser;
 };
 
@@ -64,7 +63,16 @@ const login = async(request)=>{
     server_id: true,
     id: true,
     email: true,
-    status: true
+    status: true,
+    member : {
+        select : {
+            team : {
+                select : {
+                    nama_tim : true
+                }
+            }
+        }
+    },createdAt : true
   }
 });
 
@@ -78,7 +86,10 @@ const login = async(request)=>{
         server_id : user.server_id,
         id : user.id,
         status : user.status,
-        email : user.email
+        email : user.email,
+        tim : user.member?.team?.nama_tim || 'null',
+        akun_dibuat : user.createdAt
+
         
     }
 
@@ -88,9 +99,7 @@ const login = async(request)=>{
     if (!passwordCheck) throw new responseError(401, "Akun kredensial salah!");
 
     const tokenAccess = generateJWT(data, process.env.ACCESS_TOKEN_SECRET, "1h");
-    const tokenRefresh = generateJWT(data, process.env.ACCESS_TOKEN_SECRET, "14w");
     data.token_access = tokenAccess;
-    data.token_refresh = tokenRefresh
     return data
 };
 

@@ -6,7 +6,7 @@ const publicRouter = express.Router();
 // publicRouter.post('/api/users/register' , userController.register);
 
 publicRouter.post('/api/users/register' , userController.register);
-publicRouter.post('/api/users/login', userController.login)
+publicRouter.post('/api/users/login', userController.login);
 
 export{
     publicRouter

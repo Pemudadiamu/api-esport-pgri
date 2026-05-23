@@ -1,7 +1,7 @@
 import { prismaClient } from "../application/database.js";
 import { validate } from "../validation/validate.js";
 import { responseError } from "../error/response-error.js";
-import {createKegiatanValidation, getAllValidation, idKegiatanValidation, updateKegiatanValidation} from "../validation/admin-validation.js"
+import {addMemberValidation, createKegiatanValidation, getAllValidation, idKegiatanValidation, updateKegiatanValidation} from "../validation/admin-validation.js"
 
 const createKegiatan = async(request)=>{
     request = validate(createKegiatanValidation, request);
@@ -84,7 +84,7 @@ const deleteKegiatan = async(id_kegiatan)=>{
 const getAbsensi = async(id_kegiatan)=>{
     id_kegiatan = validate(idKegiatanValidation, id_kegiatan);
 
-    const absen = await prismaClient.absensi.findFirst({
+    const absen = await prismaClient.absensi.findMany({
         where :{
             kegiatan_id : id_kegiatan
         },
@@ -108,11 +108,97 @@ const getAbsensi = async(id_kegiatan)=>{
     return absen;
 }
 
+const getAllUser = async()=>{
+    return prismaClient.user.findMany({
+        where : {
+            role : "user"
+        },select : {
+            id : true,
+            nama : true,
+            member : {
+                select : {
+                    team : {
+                        select : {
+                            nama_tim : true
+                        }
+                    },role : true
+                }
+            }
+        }
+    })
+}
+
+const createTeam = async(nama_tim) => {
+    return prismaClient.team.create({
+        data : {
+            nama_tim
+        }
+    })
+}
+
+const getAllTeam = async()=>{
+    return prismaClient.team.findMany();
+}
+
+const addingMember = async(request)=>{
+    request = validate( addMemberValidation, request);
+    return prismaClient.teamMember.create({
+        data : request,
+        select : {
+            teamId : true,
+            userId : true,
+            role : true
+        }
+    })
+}
+
+const removeMember = async(userId) =>{
+    return prismaClient.teamMember.delete({
+        where : {
+            userId : userId
+        }
+    })
+}
+
+const statistik = async()=>{
+    const countUser = await prismaClient.user.count({
+        where : {
+            role : "user"
+        }
+    });
+
+    const countOnTeam = await prismaClient.user.count({
+        where : {
+            member : {
+                isNot : null
+            }
+        }
+    });
+
+    const countNotOnTeam = countUser - countOnTeam;
+    const countTeam = await prismaClient.team.count()
+
+    const result = await prismaClient.$queryRaw` SELECT u.nama AS user_nama, u.username, tm.role, t.nama_tim FROM users u LEFT JOIN teammember tm ON u.id = tm.userId LEFT JOIN teams t ON tm.teamId = t.id order by rand(); `;
+    return {
+        allUser : countUser,
+        onTeam : countOnTeam,
+        notOnTeam : countNotOnTeam,
+        allTeam : countTeam,
+        sampleAnggota : result
+    }
+}
+
 export default{
     createKegiatan,
     getKegiatan,
     getAllKegiatan,
     updateKegiatan,
     deleteKegiatan,
-    getAbsensi
+    getAbsensi,
+    getAllUser,
+    createTeam,
+    getAllTeam,
+    addingMember,
+    removeMember,
+    statistik
 }

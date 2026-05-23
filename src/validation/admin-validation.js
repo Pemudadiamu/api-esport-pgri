@@ -3,7 +3,8 @@ import Joi from 'joi'
 export const createKegiatanValidation = Joi.object({
     nama_kegiatan : Joi.string().max(100).required(),
     tanggal_kegiatan : Joi.date().required(),
-    jam : Joi.string().required()
+    jam : Joi.string().required(),
+    onlyTeam : Joi.boolean().required().default(false)
 });
 
 export const updateKegiatanValidation = Joi.object({
@@ -18,4 +19,10 @@ export const idKegiatanValidation = Joi.string().max(36).required();
 export const getAllValidation = Joi.object({
     page : Joi.number().min(1).positive().default(1),
     size : Joi.number().min(1).max(100).default(10)
+})
+
+export const addMemberValidation = Joi.object({
+    teamId : Joi.number().min(1).required(),
+    userId : Joi.string().max(36).required(),
+    role : Joi.string().valid("gold","exp","mid","jungle","roam").required()
 })

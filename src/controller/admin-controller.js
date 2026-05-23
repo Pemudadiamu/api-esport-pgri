@@ -75,11 +75,88 @@ const get_absensi = async(req,res,next)=>{
     }
 }
 
+const getUser = async(req,res,next)=>{
+    try {
+         const result = await adminService.getAllUser();
+         res.status(200).json({
+            data : result
+         })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const createTeam = async(req,res,next)=>{
+    try {
+        const result = await adminService.createTeam(req.query.nama_tim);
+        res.status(200).json({
+            data : result
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const getTeam = async(req,res,next)=>{
+    try {
+        const result = await adminService.getAllTeam();
+        res.status(200).json({
+            data : result    
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const addingMember = async(req,res,next)=>{
+    try {
+        const request = req.body;
+        request.teamId = req.params.team_id;  
+
+        const result = await adminService.addingMember(request)
+        res.status(200).json({
+            data : result
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const removeMember = async(req,res,next)=>{
+    try {
+        const userId = req.query.userId;
+        const result = await adminService.removeMember(userId)
+
+        res.status(200).json({
+            data : "OK"
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
+const statistic = async(req,res,next)=>{
+    try {
+        const result = await adminService.statistik();
+        res.status(200).json({
+            data : result
+        })
+    } catch (e) {
+        next(e)        
+    }
+}
+
 export default{
     createKegiatan,
     getKegiatan,
     getAllKegiatan,
     updateKegiatan,
     delete_kegiatan,
-    get_absensi
+    get_absensi,
+    getUser,
+    createTeam,
+    getTeam,
+    addingMember,
+    removeMember,
+    statistic
 }

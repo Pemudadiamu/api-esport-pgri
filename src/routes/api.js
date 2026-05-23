@@ -23,6 +23,12 @@ adminRouter.get('/api/kegiatan', [authMiddleware, roleMiddleware(['admin', 'user
 adminRouter.patch('/api/kegiatan/:id_kegiatan/update', [authMiddleware, roleMiddleware(['admin'])], adminController.updateKegiatan);
 adminRouter.delete('/api/kegiatan/:id_kegiatan/delete', [authMiddleware, roleMiddleware(['admin'])], adminController.delete_kegiatan);
 adminRouter.get('/api/absen/:id_kegiatan/get' , [authMiddleware, roleMiddleware(['admin'])], adminController.get_absensi)
+adminRouter.get('/api/users/all' , [authMiddleware , roleMiddleware(['admin'])] , adminController.getUser)
+adminRouter.post('/api/teams/create' , [authMiddleware , roleMiddleware(['admin'])] , adminController.createTeam)
+adminRouter.get('/api/teams/all' , [authMiddleware , roleMiddleware(['admin'])] , adminController.getTeam)
+adminRouter.post('/api/teams/:team_id/add' , [authMiddleware , roleMiddleware(['admin'])] , adminController.addingMember)
+adminRouter.delete('/api/teams/:team_id/remove' , [authMiddleware , roleMiddleware(['admin'])] , adminController.removeMember)
+adminRouter.get('/api/statistik' , [authMiddleware, roleMiddleware(['admin'])] , adminController.statistic)
 
 // Siswa Router
 siswaRouter.post('/api/absen/:id_kegiatan/create', [authMiddleware, roleMiddleware(['user']), upload.single("bukti")], siswaController.createAbsensi);
