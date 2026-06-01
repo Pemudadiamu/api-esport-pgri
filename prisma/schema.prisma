@@ -85,13 +85,16 @@ model Team{
     @@map("teams")
 }
 
-model TeamMember{
-    id Int @id @default(autoincrement())
-    teamId Int 
-    userId String @db.VarChar(36) @unique
-    role roleML
-    joinedAt DateTime @default(now())
+model TeamMember {
+  id       Int     @id @default(autoincrement())
+  teamId   Int
+  userId   String  @db.VarChar(36) @unique
+  role     roleML
+  joinedAt DateTime @default(now())
 
-    team Team @relation(fields: [teamId] , references: [id])
-    user User @relation(fields: [userId] , references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([teamId])
 }
+

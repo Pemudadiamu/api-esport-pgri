@@ -17,9 +17,9 @@ const login = async(req,res,next)=>{
         const result = await userService.login(req.body);
         res.cookie('accessToken', result.token_access, {
              httpOnly: true,
-             secure: false, // false untuk localhost
+             secure: false,
              sameSite: 'lax',
-             maxAge:  60 * 60 * 1000, // 7 hari
+             maxAge:  60 * 60 * 1000, 
             path: '/'
         });
 

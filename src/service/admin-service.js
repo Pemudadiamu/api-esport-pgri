@@ -111,10 +111,11 @@ const getAbsensi = async(id_kegiatan)=>{
 const getAllUser = async()=>{
     return prismaClient.user.findMany({
         where : {
-            role : "user"
+            role : "user",
         },select : {
             id : true,
             nama : true,
+            username : true,
             member : {
                 select : {
                     team : {
