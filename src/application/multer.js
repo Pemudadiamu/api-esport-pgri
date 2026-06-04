@@ -52,3 +52,23 @@ export const upload = multer({
     fileFilter : allowExt
 })
 
+const settingsStorage = multer.diskStorage({
+    destination : (req, file, cb)=>{
+        cb(null, uploadDir);
+    },
+    filename : (req, file, cb)=>{
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const extensi = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + extensi);
+    }
+})
+
+export const uploadSetting = multer({
+    storage: settingsStorage,
+    limits : {
+        fileSize: 2 * 1024 * 1024
+    },
+    fileFilter : allowExt
+})
+
+

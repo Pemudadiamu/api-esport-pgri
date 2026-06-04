@@ -3,7 +3,8 @@ import userController from '../controller/user-controller.js'
 import { authMiddleware, roleMiddleware } from '../middleware/auth-middleware.js'
 import adminController from '../controller/admin-controller.js';
 import siswaController from '../controller/siswa-controller.js';
-import { upload } from '../application/multer.js';
+import { upload, uploadSetting } from '../application/multer.js';
+import settingController from '../controller/setting-controller.js';
 
 const userRouter = express.Router();
 const adminRouter = express.Router();
@@ -30,6 +31,13 @@ adminRouter.post('/api/teams/:team_id/add' , [authMiddleware , roleMiddleware(['
 adminRouter.delete('/api/teams/:team_id/remove' , [authMiddleware , roleMiddleware(['admin'])] , adminController.removeMember)
 adminRouter.get('/api/statistik' , [authMiddleware, roleMiddleware(['admin'])] , adminController.statistic)
 
+// Admin Settings Router
+adminRouter.post('/api/settings/hero', [authMiddleware, roleMiddleware(['admin']), uploadSetting.single("hero")], settingController.uploadHero);
+adminRouter.post('/api/settings/about-image', [authMiddleware, roleMiddleware(['admin']), uploadSetting.single("about")], settingController.uploadAboutImage);
+adminRouter.patch('/api/settings/about-text', [authMiddleware, roleMiddleware(['admin'])], settingController.updateAboutText);
+adminRouter.post('/api/settings/gallery', [authMiddleware, roleMiddleware(['admin']), uploadSetting.single("galleryItem")], settingController.uploadGallery);
+adminRouter.delete('/api/settings/gallery/:id', [authMiddleware, roleMiddleware(['admin'])], settingController.deleteGallery);
+
 // Siswa Router
 siswaRouter.post('/api/absen/:id_kegiatan/create', [authMiddleware, roleMiddleware(['user']), upload.single("bukti")], siswaController.createAbsensi);
 siswaRouter.get('/api/absen/get/complete', [authMiddleware, roleMiddleware(['user'])] ,siswaController.getUserAbsen)
@@ -38,4 +46,4 @@ export{
     userRouter,
     adminRouter,
     siswaRouter
-}
+}
