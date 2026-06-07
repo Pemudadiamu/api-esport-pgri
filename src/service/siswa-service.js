@@ -29,7 +29,8 @@ const alreadyAbsen = async(id_siswa) =>{
             kegiatan_id : true,
             createdAt : true,
             deskripsi : true,
-            mood : true
+            mood : true,
+            bukti : true
         }
     })
 }

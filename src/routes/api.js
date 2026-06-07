@@ -29,6 +29,7 @@ adminRouter.get('/api/teams/all' , [authMiddleware , roleMiddleware(['admin'])] 
 adminRouter.post('/api/teams/:team_id/add' , [authMiddleware , roleMiddleware(['admin'])] , adminController.addingMember)
 adminRouter.delete('/api/teams/:team_id/remove' , [authMiddleware , roleMiddleware(['admin'])] , adminController.removeMember)
 adminRouter.get('/api/statistik' , [authMiddleware, roleMiddleware(['admin'])] , adminController.statistic)
+adminRouter.get('/api/absen/export' , [authMiddleware, roleMiddleware(['admin'])] , adminController.exportExcel)
 
 // Siswa Router
 siswaRouter.post('/api/absen/:id_kegiatan/create', [authMiddleware, roleMiddleware(['user']), upload.single("bukti")], siswaController.createAbsensi);

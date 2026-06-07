@@ -146,7 +146,18 @@ const statistic = async(req,res,next)=>{
     }
 }
 
+const exportExcel = async(req,res,next)=>{
+    try {
+        const id_kegiatan = req.query.id_kegiatan;
+        const result = await adminService.exportExcel(id_kegiatan);
+        res.download(result)
+    } catch (e) {
+        next(e);        
+    }
+}
+
 export default{
+    exportExcel,
     createKegiatan,
     getKegiatan,
     getAllKegiatan,
