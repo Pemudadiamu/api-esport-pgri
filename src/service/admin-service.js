@@ -2,6 +2,7 @@ import { prismaClient } from "../application/database.js";
 import { validate } from "../validation/validate.js";
 import { responseError } from "../error/response-error.js";
 import {addMemberValidation, createKegiatanValidation, getAllValidation, idKegiatanValidation, updateKegiatanValidation} from "../validation/admin-validation.js"
+import { exportSheet } from "../application/excel.js";
 
 const createKegiatan = async(request)=>{
     request = validate(createKegiatanValidation, request);
@@ -189,7 +190,34 @@ const statistik = async()=>{
     }
 }
 
+const exportExcel = async(id_kegiatan)=>{
+    const absen = await prismaClient.absensi.findMany({
+        where : {
+            kegiatan_id : id_kegiatan
+        },
+        select : {
+            user : {
+                select : {
+                    nama : true
+                }
+            },
+            kegiatan : {
+                select :{
+                    nama_kegiatan : true
+                }
+            },
+            deskripsi : true,
+            mood : true,
+            bukti : true,
+            createdAt : true
+        }
+    })
+
+    return exportSheet(absen);
+}
+
 export default{
+    exportExcel,
     createKegiatan,
     getKegiatan,
     getAllKegiatan,
