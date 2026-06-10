@@ -191,6 +191,18 @@ const statistik = async()=>{
 }
 
 const exportExcel = async(id_kegiatan)=>{
+    id_kegiatan = validate(idKegiatanValidation, id_kegiatan);
+    
+    const kegiatan = await prismaClient.kegiatan.findUnique({
+        where: {
+            id: id_kegiatan
+        }
+    });
+
+    if (!kegiatan) {
+        throw new responseError(404, "Tidak ada data untuk disimpan!");
+    }
+
     const absen = await prismaClient.absensi.findMany({
         where : {
             kegiatan_id : id_kegiatan
@@ -211,7 +223,11 @@ const exportExcel = async(id_kegiatan)=>{
             bukti : true,
             createdAt : true
         }
-    })
+    });
+
+    if (absen.length === 0) {
+        throw new responseError(400, "Belum ada absensi untuk kegiatan ini");
+    }
 
     return exportSheet(absen);
 }

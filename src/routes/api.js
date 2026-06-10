@@ -23,6 +23,7 @@ adminRouter.get('/api/kegiatan/:id_kegiatan' , [authMiddleware, roleMiddleware([
 adminRouter.get('/api/kegiatan', [authMiddleware, roleMiddleware(['admin', 'user'])], adminController.getAllKegiatan);
 adminRouter.patch('/api/kegiatan/:id_kegiatan/update', [authMiddleware, roleMiddleware(['admin'])], adminController.updateKegiatan);
 adminRouter.delete('/api/kegiatan/:id_kegiatan/delete', [authMiddleware, roleMiddleware(['admin'])], adminController.delete_kegiatan);
+adminRouter.get('/api/absen/export', [authMiddleware, roleMiddleware(['admin'])], adminController.exportExcel);
 adminRouter.get('/api/absen/:id_kegiatan/get' , [authMiddleware, roleMiddleware(['admin'])], adminController.get_absensi)
 adminRouter.get('/api/users/all' , [authMiddleware , roleMiddleware(['admin'])] , adminController.getUser)
 adminRouter.post('/api/teams/create' , [authMiddleware , roleMiddleware(['admin'])] , adminController.createTeam)

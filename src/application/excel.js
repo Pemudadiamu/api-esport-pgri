@@ -1,26 +1,35 @@
 import ExcelJS from 'exceljs'
+import fs from 'fs'
+import path from 'path'
 
 const url = 'http://localhost:9999/' // nanti ganti
 export const exportSheet = async(datas) => {
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet(`Absensi Kegiatan ${datas[0].kegiatan.nama_kegiatan}`)
+    
+    // Sanitize worksheet name (max 31 chars, no special characters: * ? : / \ [ ])
+    const rawSheetName = `Absensi ${datas[0].kegiatan.nama_kegiatan}`;
+    const cleanSheetName = rawSheetName
+        .replace(/[*?:/\\\[\]]/g, '')
+        .substring(0, 31);
+
+    const sheet = workbook.addWorksheet(cleanSheetName || 'Absensi')
     sheet.columns = [
-        { header: 'Waktu Absen', key: 'waktu', width: 15 }
+        { header: 'Waktu Absen', key: 'waktu', width: 25 }
         ,{header : "Nama" , key : 'nama' , width : 35},
         {header : 'Deskripsi' , key : 'desc' , width : 50},
-        {header : "Mood" , key : "mood" , width: 10},
+        {header : "Mood" , key : "mood" , width: 15},
         {header : "Bukti" , key : "bukti" , width : 50},
     ]
 
     for (const data of datas) {
+        const waktuAbsen = data.createdAt ? new Date(data.createdAt).toLocaleString('id-ID') : '-';
         sheet.addRow({ 
-            waktu : data.createdAt,
+            waktu : waktuAbsen,
             nama : data.user.nama,
             desc : data.deskripsi,
             mood : data.mood,
-            bukti : url + 'assets/' +data.bukti
+            bukti : data.bukti ? url + 'assets/' + data.bukti : '-'
          });
-         
     }
 
     sheet.getRow(1).font = { bold: true };
@@ -30,7 +39,17 @@ export const exportSheet = async(datas) => {
         fgColor: { argb: 'FFD700' }
     }
 
-    await workbook.xlsx.writeFile(`./assets/excel/absen_${datas[0].kegiatan.nama_kegiatan}.xlsx`);
-    return `./assets/excel/absen_${datas[0].kegiatan.nama_kegiatan}.xlsx`
+    // Ensure assets/excel folder exists
+    const dirPath = './assets/excel';
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    // Sanitize filename to avoid invalid characters
+    const cleanFilename = datas[0].kegiatan.nama_kegiatan.replace(/[/\\?%*:|"<>\s]+/g, '_');
+    const filePath = `./assets/excel/absen_${cleanFilename}.xlsx`;
+
+    await workbook.xlsx.writeFile(filePath);
+    return filePath;
 }
 
