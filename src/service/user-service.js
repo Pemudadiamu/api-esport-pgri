@@ -204,20 +204,22 @@ const changePW = async(request , id_user)=>{
     })
 }
 
-// const refreshingToken = (tokenRefresh)=>{
-//     if(!tokenRefresh) throw new responseError(401 , 'Token Missing!')
+const checkPassword = async (password, id_user) => {
+    if (!password) throw new responseError(400, "Password tidak boleh kosong");
+    const user = await prismaClient.user.findUnique({
+        where: {
+            id: id_user
+        },
+        select: {
+            password: true
+        }
+    });
     
-//     const refreshTokenVerify = jwt.verify(tokenRefresh, process.env.REFRESH_TOKEN_SECRET);
-
-//     const tokenAccessNew = generateJWT(refreshTokenVerify, process.env.ACCESS_TOKEN_SECRET, "1h");
-//     const tokenRefreshNew = generateJWT(refreshTokenVerify, process.env.REFRESH_TOKEN_SECRET, "1w");
-//     return {
-//     tokenAccess: tokenAccessNew,
-//     tokenRefresh: tokenRefreshNew,
-//     };
-// }
-
-// jangan pake refresh token dulu dah
+    if (!user) throw new responseError(404, "User tidak ditemukan");
+    
+    const passwordCheck = await bcrypt.compare(password, user.password);
+    if (!passwordCheck) throw new responseError(401, "Password saat ini salah!");
+}
 
 export default {
     register,
@@ -225,5 +227,6 @@ export default {
     updateProfile,
     verifyOTP,
     requestOTP,
-    changePW
+    changePW,
+    checkPassword
 }

@@ -108,6 +108,17 @@ const changePassword = async(req,res,next)=>{
     }
 }
 
+const checkPassword = async(req,res,next)=>{
+    try {
+        await userService.checkPassword(req.body.password, req.user.id);
+        res.status(200).json({
+            data : 'OK'
+        });
+    } catch (e) {
+        next(e);
+    }
+}
+
 export default{
     register,
     login,
@@ -116,5 +127,6 @@ export default{
     getUser,
     verifyOTP,
     requestotp,
-    changePassword
+    changePassword,
+    checkPassword
 }
