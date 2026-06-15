@@ -1,4 +1,5 @@
 import adminService from "../service/admin-service.js";
+import { hapusSheet } from "../application/excel.js";
 
 const createKegiatan = async(req,res,next)=>{
     try {
@@ -150,7 +151,14 @@ const exportExcel = async(req,res,next)=>{
     try {
         const id_kegiatan = req.query.id_kegiatan;
         const result = await adminService.exportExcel(id_kegiatan);
-        res.download(result)
+        res.download(result, (err) => {
+            if (err) {
+                console.error('Error saat download:', err);
+            } else {
+                hapusSheet(result);
+            }
+        })
+        
     } catch (e) {
         next(e);        
     }

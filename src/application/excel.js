@@ -53,3 +53,11 @@ export const exportSheet = async(datas) => {
     return filePath;
 }
 
+export const hapusSheet = async(path) =>{
+    try {
+        await fs.promises.unlink(path)
+    } catch (e) {
+        console.log('Error Menghapus Excel : '+e);        
+    }
+}
+

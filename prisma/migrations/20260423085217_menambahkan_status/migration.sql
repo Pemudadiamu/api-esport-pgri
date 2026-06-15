@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE `users` ADD COLUMN `status` BOOLEAN NOT NULL DEFAULT false,
-    MODIFY `otp` VARCHAR(100) NOT NULL;
