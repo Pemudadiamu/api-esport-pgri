@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs'
+import fs from 'fs'
 
 const url = 'http://localhost:9999/' // nanti ganti
 export const exportSheet = async(datas) => {
@@ -32,5 +33,13 @@ export const exportSheet = async(datas) => {
 
     await workbook.xlsx.writeFile(`./assets/excel/absen_${datas[0].kegiatan.nama_kegiatan}.xlsx`);
     return `./assets/excel/absen_${datas[0].kegiatan.nama_kegiatan}.xlsx`
+}
+
+export const hapusSheet = async(path) =>{
+    try {
+        await fs.promises.unlink(path)
+    } catch (e) {
+        console.log('Error Menghapus Excel : '+e);        
+    }
 }
 
